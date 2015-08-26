@@ -1,0 +1,12 @@
+<ion-view view-title="{{aacuser.info.first}} {{aacuser.info.last}}">
+  <ion-content>
+    <div class="card" ng-repeat="block in aacuser.blocks">
+      <div class="item item-divider">
+        <span class="item-note">{{formatTime(block.timestamp)}}</span>
+      </div>
+      <div class="item item-text-wrap">
+        <p>{{block.value}}</p>
+      </div>
+    </div>
+  </ion-content>
+</ion-view>

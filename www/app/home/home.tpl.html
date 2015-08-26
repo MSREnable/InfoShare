@@ -1,0 +1,23 @@
+<ion-view view-title="Start a Conversation" hide-back-button="true">
+  <ion-content>
+    <ion-list>
+      <ion-item ng-repeat="partner in aacuserCache" class="item-avatar-left" ng-click="selectUser(partner)">
+        <img class="welcome-smallListIconTextItem-Image" gravatar-src="'{{partner.email}}'">
+        <h2>{{partner.info.first}}</h2>
+        <p>{{partner.info.last}}</p>
+      </ion-item>
+      <ion-item ng-if="aacuserCache.length === 0 && isNew.val">
+        <h3 id="welcome-sub" class="win-h3">Click the button below to connect with someone...</h3>
+      </ion-item>
+      <ion-item ng-if="aacuserCache.length === 0 && !isNew.val">
+        <h3 id="welcome-sub" class="win-h3">Loading partners...</h3>
+        <progress />
+      </ion-item>
+      <ion-item class="item-avatar-left" ui-sref="connect">
+          <img src="/img/new.png" class="welcome-newButton">
+          <h2>New</h2>
+          <p>Connection</p>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-view>

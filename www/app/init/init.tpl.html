@@ -1,0 +1,22 @@
+<ion-view view-title="Welcome to InfoShare!">
+  <ion-content>
+    <ion-list>
+      <ion-item class="item-input item-stacked-label">
+        <span class="input-label">First Name</span>
+        <input type="text" ng-model="user.first" placeholder="John">
+      </ion-item>
+      <ion-item class="item-input item-stacked-label">
+        <span class="input-label">Last Name</span>
+        <input type="text" ng-model="user.last" placeholder="Doe">
+      </ion-item>
+      <ion-item class="item-input item-stacked-label">
+        <span class="input-label">Email</span>
+        <input type="text" ng-model="user.email" placeholder="john@doe.com">
+      </ion-item>
+    </ion-list>
+    
+    <button class="button button-outline button-block button-dark" ng-click="setUid()">
+      Create Account
+    </button>
+  </ion-content>
+</ion-view>
