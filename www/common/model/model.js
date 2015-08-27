@@ -200,8 +200,6 @@ mod.factory('model', ['$rootScope', '$q', '$firebaseObject', '$firebaseArray', '
                         _.remove(pendingCache, function (partner) {
                           return partner.uid === old.key();
                         });
-
-                        $rootScope.$apply();
                     });
                 }
 

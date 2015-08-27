@@ -61,6 +61,13 @@ mod.controller('connect', ['$scope', '$state', '$ionicPopup', 'model',
          });
        };
        
+       function showPendingRemoved(name) {
+         $ionicPopup.alert({
+           title: 'Request Deleted!',
+           template: 'This pending request has been deleted.' 
+         });
+       };
+       
        function showError() {
          $ionicPopup.alert({
            title: 'Error Sending Request!',
@@ -86,10 +93,11 @@ mod.controller('connect', ['$scope', '$state', '$ionicPopup', 'model',
         
         $scope.deleteRequest = function (e, $event) {
           $event.stopPropagation();
+          
           // Create a connection request
           model.deleteConnectionRequest(e.$id).then(function () {
               $scope.sending = false;
-              showSuccess(e.first + ' ' + e.last);
+              showPendingRemoved();
           }, function (error) {
               $scope.sending = false;
               showError();
