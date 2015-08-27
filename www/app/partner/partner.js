@@ -1,13 +1,45 @@
-var mod = angular.module('InfoShare.partner', ['firebase', 'common.model']);
+var mod = angular.module('InfoShare.partner', ['firebase', 'common.model', 'ionic.contrib.ui.cards']);
 
-mod.controller("partner", ['$scope', '$stateParams', '$timeout', '$firebaseObject', '$firebaseArray', 'model',
-    function ($scope, $stateParams, $timeout, $firebaseObject, $firebaseArray, model) {
-
+mod.controller("partner", ['$scope', '$rootScope', '$stateParams', '$timeout', '$firebaseObject', '$firebaseArray', 'model',
+    function ($scope, $rootScope, $stateParams, $timeout, $firebaseObject, $firebaseArray, model) {
         // Binding Properties
         $scope.aacuser = model.loadCachedPartner($stateParams.cachedPartnerUid);
-        $scope.selectedMsg = 0;
         $scope.isPlaying = false;
 
+        $scope.cards = [];
+        
+        $scope.cardSwiped = function() {
+          $scope.cards.splice(0, 1);
+          
+          if($scope.aacuser.broadcasts.length !== 0)
+            $scope.cards.push({ broadcast: nextBroadcast()});
+        };
+        
+        var index = -1;
+        
+        function nextBroadcast() {          
+          index++;
+          
+          if(index === $scope.aacuser.broadcasts.length) index = 0;
+          
+          return $scope.aacuser.broadcasts[index];
+        }
+        
+        $scope.aacuser.broadcasts.loaded.then(function(){
+          $scope.cardSwiped();
+        });
+        
+        $scope.conditionalClasses = function(filtered) {
+          if(filtered) {
+            if(($scope.aacuser.permissions.speech < 4 && $scope.aacuser.info.state < 3) ||
+               ($scope.aacuser.permissions.speech === 4 && $scope.aacuser.info.state < 2)) {
+                return 'block-card';
+              }
+          }
+              
+          return '';
+        };
+        
         // Display time of message correctly
         var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
         $scope.formatTime = function (timestamp) {
@@ -18,8 +50,7 @@ mod.controller("partner", ['$scope', '$stateParams', '$timeout', '$firebaseObjec
             var date = a.getDate();
 
             var hour = a.getHours();
-            var min = a.getMinutes();
-            var sec = a.getSeconds();
+            var min = ('00' + a.getMinutes()).slice(-2);
 
             var ampm = hour >= 12 ? 'PM' : 'AM';
             hour = hour % 12;
@@ -41,7 +72,7 @@ mod.controller("partner", ['$scope', '$stateParams', '$timeout', '$firebaseObjec
                         $scope.isPlaying = true;
                         $scope.hasPlayed = true;
 
-                        var msg = new SpeechSynthesisUtterance('This is a test');
+                        var msg = new SpeechSynthesisUtterance($scope.aacuser.blocks[0].value);
                         window.speechSynthesis.speak(msg);
                     }
                     break;
@@ -51,7 +82,7 @@ mod.controller("partner", ['$scope', '$stateParams', '$timeout', '$firebaseObjec
             }
         };
 
-        $scope.states = ["idle", "typing", "talking", "calibrating"];
+        $scope.states = ["Idle", "Typing", "Talking", "Calibrating"];
 
         $scope.getStateString = function (state) {
             $scope._onStateChange(state);
@@ -67,6 +98,21 @@ mod.controller("partner", ['$scope', '$stateParams', '$timeout', '$firebaseObjec
         };
 
         // Filters for displaying information based on privacy settings
+        $scope.filter = function(block) {
+          switch($scope.aacuser.permissions.speech) {
+            case 0:
+              return block.value;
+            case 1:
+              return wordsFilter(block);
+            case 2:
+              return sentencesFilter(block);
+            case 3:
+              return fullBlocksFilter(block);
+            case 4:
+              return null;//audioOnlyFilter(block);
+          }
+        };
+        
         $scope._filter = function filter(text, char) {
             if (text.slice(-1) === char) {
                 return text;
@@ -74,37 +120,44 @@ mod.controller("partner", ['$scope', '$stateParams', '$timeout', '$firebaseObjec
                 var end = text.lastIndexOf(char);
 
                 if (end > 0)
-                    return text.slice(0, end);
+                  return text.slice(0, end);
 
-                return '';
+                // if ($scope.aacuser.info.state !== 0)
+                //   return $scope.aacuser.info.first + ' is typing...';
+                  
+                return null;
             }
         };
 
-        $scope.wordsFilter = function (block) {
+        function wordsFilter(block) {
             if (block.complete) return block.value;
 
             return $scope._filter(block.value, ' ');
         };
 
-        $scope.sentencesFilter = function (block) {
+        function sentencesFilter(block) {
             if (block.complete) return block.value;
 
             return $scope._filter(block.value, '.');
         };
+        
+        function fullBlocksFilter(block) {
+          if(block.complete) return block.value;
 
-        // Start a timer for iterating through the current broadcasts
-        var broadcastTimer = null;
-        function updateBroadcast() {
-            $scope.selectedMsg = ($scope.selectedMsg + 1) % $scope.aacuser.broadcasts.length;
-            broadcastTimer = $timeout(updateBroadcast, 10000);
-        }
-        broadcastTimer = $timeout(updateBroadcast, 10000);
+          // if ($scope.aacuser.info.state !== 0)
+          //   return $scope.aacuser.info.first + ' is typing...';
+          
+          return null;
+        };
+        
+        function audioOnlyFilter(block) {
+          if($scope.isPlaying) 
+            return $scope.aacuser.info.first + ' is speaking...';
 
-        // Stop updating the broadcasts when the user navigates away
-        // function navigatingAway() {
-        //     if (broadcastTimer && $timeout.cancel(broadcastTimer)) broadcastTimer = null;
-        //     WinJS.Navigation.removeEventListener('navigating', navigatingAway);
-        // }
-        // WinJS.Navigation.addEventListener('navigating', navigatingAway);
+          // if ($scope.aacuser.info.state !== 0)
+          //   return $scope.aacuser.info.first + ' is typing...';
+          
+          return null;
+        };
     }
 ]);

@@ -12,64 +12,89 @@ function uidToEmail(uid) {
     return tmp;
 };
 
-mod.controller('connect', ['$scope', '$state', 'model',
-    function ($scope, $state, model) {
+mod.filter('emailOrName', function() {
+  return function(items, query) {
+    var filtered = [];
+    
+    if(query === '') return filtered;
+    
+    angular.forEach(items, function(item) {
+      if(item.$id !== window.localStorage.getItem('uid') &&
+         (item.first.indexOf(query) === 0 ||
+          item.last.indexOf(query) === 0 ||
+          uidToEmail(item.$id).indexOf(query) === 0)) {
+            filtered.push(item);
+          }
+    });
+    
+    return filtered;
+  }  
+});
 
-        var lastCalled = Date.now();
-        var cache = {};
-
+mod.controller('connect', ['$scope', '$state', '$ionicPopup', 'model',
+    function ($scope, $state, $ionicPopup, model) {
         $scope.users = model.getUsers();
-
-        $scope.placeholder = "Email Address";
-        $scope.email = "";
-
-        $scope.noUsers = false;
-        $scope.getSuggestions = function (e) {
-            var query = emailToUid(e.detail.queryText).toLowerCase();
-            var suggestions = e.detail.searchSuggestionCollection;
-
-            if (query.length === 0) {
-                $scope.noUsers = false;
-                return;
-            }
-
-            var userExists = false;
-            _.forEach($scope.users, function (user) {
-                if (user.isAACuser && user.$id.substr(0, query.length).toLowerCase() === query) {
-                    suggestions.appendResultSuggestion(
-                        user.first + ' ' + user.last, 
-                        uidToEmail(user.$id),
-                        user.$id, null, null
-                    );
-
-                    cache[user.$id] = user.first + ' ' + user.last;
-
-                    userExists = true;
-                }
-            });
-
-            $scope.noUsers = !userExists;
-        };
-
+        $scope.partners = model.getPartners(window.localStorage.getItem('uid'));
+        $scope.pending = model.getPending(window.localStorage.getItem('uid'));
+        
+        $scope.query = "";
         $scope.sending = false;
-        $scope.addConnection = function (e) {
-            $scope.sending = true;
+        
+        $scope.isPartner = function(uid) {
+          return _.find($scope.partners, function(p) { return p.uid === uid; })
+        };
+        
+        $scope.isPending = function(uid) {
+          return _.find($scope.pending, function(p) { return p.uid === uid; })
+        };
+        
+        function showSuccess(name) {
+         var alertPopup = $ionicPopup.alert({
+           title: 'Request Sent!',
+           template: 'Your request to connect with ' + name + ' has been sent. ' + name +
+                      ' will appear in your contacts on the home screen when they respond' +
+                      ' to your request.' 
+         });
+         
+         alertPopup.then(function(res) {
+           $state.go('home');
+         });
+       };
+       
+       function showError() {
+         $ionicPopup.alert({
+           title: 'Error Sending Request!',
+           template: 'Please try again later. If this error continues to occur, please contact your Microsoft Enable Team representative!' 
+         });
+       };
+ 
+        $scope.sendRequest = function (e) {
+          $scope.sending = true;
 
-            // Temporary work-around for the broken implementation of the search box in WinJS
-            // this prevents sendConnectionRequest from firing twice in a row
-            if (Date.now() - lastCalled > 1000) {
-                lastCalled = Date.now();
-
-                // Create a connection request
-                model.sendConnectionRequest(e.detail.tag).then(function () {
-                    $scope.sending = false;
-                    $state.go('home');
-                }, function (error) {
-                    $scope.sending = false;
-                    console.error('The connection request could not be sent!');
-                    console.error(error);
-                });
-            }
+          if(!_.find($scope.partners, function(p) { return p.uid === e.$id; })) {
+            // Create a connection request
+            model.sendConnectionRequest(e.$id).then(function () {
+                $scope.sending = false;
+                showSuccess(e.first + ' ' + e.last);
+            }, function (error) {
+                $scope.sending = false;
+                showError();
+                console.error(error);
+            });
+          }
+        };
+        
+        $scope.deleteRequest = function (e, $event) {
+          $event.stopPropagation();
+          // Create a connection request
+          model.deleteConnectionRequest(e.$id).then(function () {
+              $scope.sending = false;
+              showSuccess(e.first + ' ' + e.last);
+          }, function (error) {
+              $scope.sending = false;
+              showError();
+              console.error(error);
+          });
         };
     }
 ]);

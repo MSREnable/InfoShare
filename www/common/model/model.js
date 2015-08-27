@@ -8,15 +8,18 @@ mod.factory('model', ['$rootScope', '$q', '$firebaseObject', '$firebaseArray', '
         var users = new Firebase("https://coconstruct.firebaseio.com/users");
         var partners = new Firebase("https://coconstruct.firebaseio.com/partners");
         var requests = new Firebase("https://coconstruct.firebaseio.com/requests");
+        var pending = new Firebase("https://coconstruct.firebaseio.com/pending");
         var listeners = new Firebase("https://coconstruct.firebaseio.com/listeners");
         var permissions = new Firebase("https://coconstruct.firebaseio.com/permissions");
         var broadcasts = new Firebase("https://coconstruct.firebaseio.com/broadcasts");
 
         var partnerCache = [];
+        var pendingCache = [];
 
         var isNewUser = { val: false };
 
         var partnerRef = null;
+        var pendingRef = null;
 
         var broadcastCache = [];
 
@@ -73,6 +76,8 @@ mod.factory('model', ['$rootScope', '$q', '$firebaseObject', '$firebaseArray', '
             });
                 
 
+
+            var loaded = $q.defer();
             $q.all([gen.promise, def.promise]).then(function () {
                 broadcastCache.length = 0;
 
@@ -96,8 +101,12 @@ mod.factory('model', ['$rootScope', '$q', '$firebaseObject', '$firebaseArray', '
 
                     i++;
                 });
+                
+                loaded.resolve();
             });
 
+            broadcastCache.loaded = loaded.promise;
+            
             return broadcastCache;
         }
 
@@ -177,6 +186,28 @@ mod.factory('model', ['$rootScope', '$q', '$firebaseObject', '$firebaseArray', '
                 return partnerCache;
             },
 
+            getPending: function(uid) {
+                if (!pendingRef) {
+                    pendingRef = pending.child(uid);
+                    
+                    pendingRef.on('child_added', function (added) {
+                        pendingCache.push({
+                          uid: added.key()
+                        });
+                    });
+
+                    pendingRef.on('child_removed', function (old) {
+                        _.remove(pendingCache, function (partner) {
+                          return partner.uid === old.key();
+                        });
+
+                        $rootScope.$apply();
+                    });
+                }
+
+                return pendingCache;
+            },
+
             loadCachedPartner: function (uid) {
                 var partner = _.find(partnerCache, function (p) {
                     return p.uid === uid;
@@ -194,17 +225,53 @@ mod.factory('model', ['$rootScope', '$q', '$firebaseObject', '$firebaseArray', '
             sendConnectionRequest: function (uid) {
                 console.log('Sending partner request...');
 
-                var deferred = $q.defer();
+                var req = $q.defer();
 
-                var person = requests.child(uid).child(currentUser).set(Firebase.ServerValue.TIMESTAMP, function (error) {
+                requests.child(uid).child(currentUser).set(Firebase.ServerValue.TIMESTAMP, function (error) {
                     if (error) {
-                        deferred.reject(error)
+                        req.reject(error)
                     } else {
-                        deferred.resolve();
+                        req.resolve();
+                    }
+                });
+                
+                var pen = $q.defer();
+                
+                pending.child(currentUser).child(uid).set(Firebase.ServerValue.TIMESTAMP, function (error) {
+                    if (error) {
+                        pen.reject(error)
+                    } else {
+                        pen.resolve();
                     }
                 });
 
-                return deferred.promise;
+                return $q.all([req.promise, pen.promise]);
+            },
+            
+            deleteConnectionRequest: function (uid) {
+                console.log('Deleting partner request...');
+
+                var req = $q.defer();
+
+                requests.child(uid).child(currentUser).set(null, function (error) {
+                    if (error) {
+                        req.reject(error)
+                    } else {
+                        req.resolve();
+                    }
+                });
+                
+                var pen = $q.defer();
+                
+                pending.child(currentUser).child(uid).set(null, function (error) {
+                    if (error) {
+                        pen.reject(error)
+                    } else {
+                        pen.resolve();
+                    }
+                });
+
+                return $q.all([req.promise, pen.promise]);
             },
 
             newUser: function (uid, info) {
