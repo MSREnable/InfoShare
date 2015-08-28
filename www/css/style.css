@@ -44,6 +44,13 @@ i.connection-existing.ion-ios-checkmark-outline {
 .block-meta ion-spinner.spinner.spinner-dots svg {
   margin-top: -5px;
 }
+
+button.suggestion-send-btn {
+  min-height: 30px;
+  line-height: 23px;
+  margin-right: 10px;
+}
+
 .scroll-view {
   height: 100%;
   overflow: hidden;

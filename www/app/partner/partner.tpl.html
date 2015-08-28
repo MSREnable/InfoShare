@@ -13,6 +13,13 @@
         <span class="item-note">{{formatTime(block.timestamp)}}</span>
       </div>
       
+      <label class="item item-input item-divider"
+              ng-if="filter(block) && aacuser.info.state !== 3 && (aacuser.permissions.history !== 2 || inTimeRange(block.timestamp))">
+        <i class="icon ion-share placeholder-icon"></i>
+        <input type="text" placeholder="Suggest a Word" ng-model="suggestion">
+        <button class="button button-outline button-positive suggestion-send-btn" ng-click="sendSuggestion()">Send</button>
+      </label>
+      
       <ion-scroll class="item item-text-wrap padding" ng-if="filter(block) && aacuser.info.state !== 3 && (aacuser.permissions.history !== 2 || inTimeRange(block.timestamp))">
         <p>{{filter(block)}}</p>
       </ion-scroll>

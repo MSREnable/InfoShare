@@ -39,6 +39,13 @@ mod.controller("partner", ['$scope', '$rootScope', '$stateParams', '$timeout', '
               
           return '';
         };
+
+        $scope.sendSuggestion = function () {
+            console.log("Suggestion: " + $scope.suggestion);
+            var blockID = $scope.aacuser.blocks[0].$id;
+            model.sendSuggestion($scope.aacuser.uid, blockID, $scope.suggestion);
+            $scope.suggestion = "";
+        };
         
         // Display time of message correctly
         var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];

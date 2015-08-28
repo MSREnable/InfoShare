@@ -10,6 +10,7 @@ mod.factory('model', ['$rootScope', '$q', '$firebaseObject', '$firebaseArray', '
         var listeners = new Firebase("https://coconstruct.firebaseio.com/listeners");
         var permissions = new Firebase("https://coconstruct.firebaseio.com/permissions");
         var broadcasts = new Firebase("https://coconstruct.firebaseio.com/broadcasts");
+        var suggestions = new Firebase("https://coconstruct.firebaseio.com/suggestions");
 
         var partnerCache = [];
         var pendingCache = [];
@@ -222,6 +223,10 @@ mod.factory('model', ['$rootScope', '$q', '$firebaseObject', '$firebaseArray', '
                 partner.broadcasts = _getBroadcasts(partner.uid);
 
                 return partner;
+            },
+
+            sendSuggestion: function(aacuser, blockID, suggestion) {
+                suggestions.child(aacuser).child(blockID).push(suggestion);
             },
             
             sendConnectionRequest: function (uid) {
