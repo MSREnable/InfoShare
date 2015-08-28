@@ -2,8 +2,6 @@ var mod = angular.module('common.model', ['firebase', 'common.auth']);
 
 mod.factory('model', ['$rootScope', '$q', '$firebaseObject', '$firebaseArray', 'auth',
     function ($rootScope, $q, $firebaseObject, $firebaseArray, auth) {
-        var currentUser = window.localStorage.getItem('uid');
-
         var blocks = new Firebase("https://coconstruct.firebaseio.com/blocks");
         var users = new Firebase("https://coconstruct.firebaseio.com/users");
         var partners = new Firebase("https://coconstruct.firebaseio.com/partners");
@@ -51,6 +49,8 @@ mod.factory('model', ['$rootScope', '$q', '$firebaseObject', '$firebaseArray', '
                     generalMsgs.push(message);
                 });
 
+                console.log('Got general');
+                
                 gen.resolve();
             });
 
@@ -58,17 +58,21 @@ mod.factory('model', ['$rootScope', '$q', '$firebaseObject', '$firebaseArray', '
             var defaultMsgs = [];
             var def = $q.defer();
             broadcasts.child('viewers').child(uid).once('value', function(snap) {
-                if (!snap.child(currentUser).exists()) {
+                if (!snap.child(window.localStorage.getItem('uid')).exists()) {
                     broadcasts.child('default').child(uid).once('value', function (snap) {
                         var messages = snap.val();
 
                         _.forEach(messages, function (message) {
                             defaultMsgs.push(message);
                         });
+                
+                        console.log('Got default');
 
                         def.resolve();
 
-                        broadcasts.child('viewers').child(uid).child(currentUser).set(true);
+                        broadcasts.child('viewers').child(uid).child(window.localStorage.getItem('uid')).set(true);
+                    }, function (error) {
+                        console.log('Oops: ' + error);
                     });
                 } else {
                     def.resolve();
@@ -112,16 +116,16 @@ mod.factory('model', ['$rootScope', '$q', '$firebaseObject', '$firebaseArray', '
 
         return {
             connect: function() {
-                if (currentUser) {
-                    users.child(currentUser).child('connected').set(true);
+                if (window.localStorage.getItem('uid')) {
+                    users.child(window.localStorage.getItem('uid')).child('connected').set(true);
                 }
             },
 
             disconnect: function () {
                 var deferred = $q.defer();
 
-                if (currentUser) {
-                    users.child(currentUser).child('connected').set(false, function (error) {
+                if (window.localStorage.getItem('uid')) {
+                    users.child(window.localStorage.getItem('uid')).child('connected').set(false, function (error) {
                         if (error) {
                             deferred.reject(error)
                         } else {
@@ -136,11 +140,11 @@ mod.factory('model', ['$rootScope', '$q', '$firebaseObject', '$firebaseArray', '
             },
 
             startListening: function (id) {
-                listeners.child(id).child(currentUser).set(true);
+                listeners.child(id).child(window.localStorage.getItem('uid')).set(true);
             },
 
             stopListening: function (id) {
-                listeners.child(id).child(currentUser).set(null);
+                listeners.child(id).child(window.localStorage.getItem('uid')).set(null);
             },
 
             getUsers: function () {
@@ -225,7 +229,7 @@ mod.factory('model', ['$rootScope', '$q', '$firebaseObject', '$firebaseArray', '
 
                 var req = $q.defer();
 
-                requests.child(uid).child(currentUser).set(Firebase.ServerValue.TIMESTAMP, function (error) {
+                requests.child(uid).child(window.localStorage.getItem('uid')).set(Firebase.ServerValue.TIMESTAMP, function (error) {
                     if (error) {
                         req.reject(error)
                     } else {
@@ -235,7 +239,7 @@ mod.factory('model', ['$rootScope', '$q', '$firebaseObject', '$firebaseArray', '
                 
                 var pen = $q.defer();
                 
-                pending.child(currentUser).child(uid).set(Firebase.ServerValue.TIMESTAMP, function (error) {
+                pending.child(window.localStorage.getItem('uid')).child(uid).set(Firebase.ServerValue.TIMESTAMP, function (error) {
                     if (error) {
                         pen.reject(error)
                     } else {
@@ -251,7 +255,7 @@ mod.factory('model', ['$rootScope', '$q', '$firebaseObject', '$firebaseArray', '
 
                 var req = $q.defer();
 
-                requests.child(uid).child(currentUser).set(null, function (error) {
+                requests.child(uid).child(window.localStorage.getItem('uid')).set(null, function (error) {
                     if (error) {
                         req.reject(error)
                     } else {
@@ -261,7 +265,7 @@ mod.factory('model', ['$rootScope', '$q', '$firebaseObject', '$firebaseArray', '
                 
                 var pen = $q.defer();
                 
-                pending.child(currentUser).child(uid).set(null, function (error) {
+                pending.child(window.localStorage.getItem('uid')).child(uid).set(null, function (error) {
                     if (error) {
                         pen.reject(error)
                     } else {
