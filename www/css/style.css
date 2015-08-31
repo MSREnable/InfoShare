@@ -33,8 +33,12 @@ i.connection-existing.ion-ios-checkmark-outline {
   padding-top: 60px;
 }
 
+.scroll-wrap {
+  height: 50%;
+}
+
 .block-card {
-  height: 60%;  
+  height: 50%;  
 }
 
 .block-meta {
@@ -65,9 +69,9 @@ swipe-card {
   position: fixed;
   -webkit-transform: scale(1,1);
   left: 0%;
-  top: 0%;
+  top: -20px;
   width: calc(100% - 20px);
-  height: 25%;
+  height: 37%;
   box-sizing: border-box;
   background-color: rgb(126,126,126);
   border-radius: 4px;

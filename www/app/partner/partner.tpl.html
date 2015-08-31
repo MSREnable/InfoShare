@@ -20,9 +20,11 @@
         <button type="button" class="button button-outline button-positive suggestion-send-btn" ng-click="sendSuggestion()">Send</button>
       </div>
       
-      <ion-scroll class="item item-text-wrap padding" ng-if="filter(block) && aacuser.info.state !== 3 && (aacuser.permissions.history !== 2 || inTimeRange(block.timestamp))">
-        <p>{{filter(block)}}</p>
-      </ion-scroll>
+      <div class="scroll-wrap">
+        <ion-scroll class="item item-text-wrap padding" ng-if="filter(block) && aacuser.info.state !== 3 && (aacuser.permissions.history !== 2 || inTimeRange(block.timestamp))">
+          <p>{{filter(block)}}</p>
+        </ion-scroll>
+      </div>
       
       <div ng-if="!filter(block) && aacuser.info.state === 0" class="item item-icon-left royal">
         <i class="icon ion-ios-information-outline"></i>
@@ -69,7 +71,7 @@
         <ion-scroll class="item item-text-wrap padding" ng-if="card.broadcast.type !== 'image'">
           <p>{{card.broadcast.msg}}</p>
         </ion-scroll>
-        <div ng-if="card.broadcast.type === 'image'" class="item item-image padding">
+        <div ng-if="card.broadcast.type === 'image'" class="item item-image padding image">
           <img ng-src="{{card.broadcast.src}}" />
         </div>
       </swipe-card>
