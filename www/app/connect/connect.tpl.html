@@ -6,7 +6,10 @@
     </label>
     <ion-scroll>
       <ion-list>
-        <ion-item class="connection-item" ng-click="sendRequest(user)" collection-repeat="user in users | orderBy: first + last | emailOrName:query">
+        <ion-item class="connection-item" ng-click="sendRequest(user)" 
+                  collection-repeat="user in users | orderBy: first + last | emailOrName:query"
+                  item-height="60px"
+                  item-width="100%">
           <span class="connection-name">{{user.first}} {{user.last}}</span>
           <i ng-if="isPartner(user.$id)" class="icon ion-ios-checkmark-outline balanced connection-existing"></i>
           <button ng-if="isPending(user.$id)" ng-click="deleteRequest(user, $event)" class="button button-outline button-energized connection-pending">Pending</button>

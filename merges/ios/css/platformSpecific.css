@@ -1,0 +1,99 @@
+﻿.connection-pane {
+  margin-top: 70px;
+}
+
+.connection-item {
+  height: 60px;
+}
+
+span.connection-name {
+  font-size: 20px;
+  position: absolute;
+  top: 50%;
+  margin-top: -10px;
+}
+
+button.connection-pending {
+  font-size: 16px;
+  position: absolute;
+  top: 50%;
+  right: 16px;
+  margin-top: -24px;
+}
+
+i.connection-existing.ion-ios-checkmark-outline {
+  font-size: 30px;
+  position: absolute;
+  top: 50%;
+  right: 16px;
+  margin-top: -15px;
+}
+
+.partner {
+  padding-top: 60px;
+}
+
+.scroll-wrap {
+  height: 50%;
+}
+
+.block-card {
+  height: 50%;  
+}
+
+.block-meta {
+  height: 38px;  
+}
+
+.block-meta ion-spinner.spinner.spinner-dots svg {
+  margin-top: -5px;
+}
+
+button.suggestion-send-btn {
+  min-height: 30px;
+  line-height: 23px;
+  margin-right: 10px;
+}
+
+.scroll-view {
+  height: 100%;
+  overflow: hidden;
+}
+
+.swipe-cards {
+  position: fixed;
+}
+
+swipe-card {
+  display: none;
+  position: fixed;
+  -webkit-transform: scale(1,1);
+  left: 0%;
+  top: -20px;
+  width: calc(100% - 20px);
+  height: 37%;
+  box-sizing: border-box;
+  background-color: rgb(126,126,126);
+  border-radius: 4px;
+  overflow: hidden;
+  -webkit-animation-fill-mode: forwards;
+}
+
+@-webkit-keyframes bounceIn {
+  0% {
+    -webkit-transform: scale(0,0);
+  }
+  70% {
+    -webkit-transform: scale(1.2,1.2);
+  }
+  100% {
+    -webkit-transform: scale(1,1);
+  }
+}
+
+swipe-card.pop-in-start {
+  -webkit-transform: scale(0,0);
+}
+swipe-card.pop-in {
+  -webkit-animation: bounceIn 0.4s ease-out;
+}

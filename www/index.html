@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8">
@@ -8,7 +8,11 @@
 
     <!-- compiled css output -->
     <link href="css/ionic.app.css" rel="stylesheet">
-    <link href="css/style.css" rel="stylesheet">
+    <link href="css/platformSpecific.css" rel="stylesheet">
+
+    <!-- cordova script (this will be a 404 during development) -->
+    <script src="cordova.js"></script>
+    <script src="scripts/platformOverrides.js"></script>
 
     <!-- ionic/angularjs js -->
     <script src="lib/ionic/js/ionic.bundle.js"></script>
@@ -17,9 +21,6 @@
     <script src="lib/ngCordova/dist/ng-cordova.js"></script>
     
     <script src="lib/angular-gravatar/build/angular-gravatar.js"></script>
-
-    <!-- cordova script (this will be a 404 during development) -->
-    <script src="cordova.js"></script>
 
     <!-- Firebase -->
     <script src="lib/firebase/firebase-token-generator.js"></script>
@@ -38,10 +39,6 @@
     <script src="app/home/home.js"></script>
     <script src="app/partner/partner.js"></script>
     <script src="app/connect/connect.js"></script>
-    <!--<script src="app/main/main.js"></script>
-    <script src="app/welcome/welcome.js"></script>
-    <script src="app/new/new.js"></script>
-    <script src="app/new-sent/new-sent.js"></script>-->
     
     <!-- your app's js -->
     <script src="app/app.js"></script>
