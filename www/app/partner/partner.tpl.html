@@ -71,7 +71,7 @@
         <ion-scroll class="item item-text-wrap padding" ng-if="card.broadcast.type !== 'image'">
           <p>{{card.broadcast.msg}}</p>
         </ion-scroll>
-        <div ng-if="card.broadcast.type === 'image'" class="item item-image padding image">
+        <div ng-if="card.broadcast.type === 'image'" class="item item-image padding">
           <img ng-src="{{card.broadcast.src}}" />
         </div>
       </swipe-card>
