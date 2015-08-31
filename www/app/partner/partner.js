@@ -42,7 +42,7 @@ mod.controller("partner", ['$scope', '$rootScope', '$stateParams', '$timeout', '
               
           return '';
         };
-
+        
         $scope.sendSuggestion = function () {
             console.log("Suggestion: " + $scope.model.suggestion);
             var blockID = $scope.aacuser.blocks[0].$id;
