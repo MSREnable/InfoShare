@@ -1,10 +1,7 @@
 ﻿.connection-pane {
-  margin-top: 70px;
+  margin-top: 50px;
 }
 
-.connection-item {
-  height: 60px;
-}
 
 span.connection-name {
   font-size: 20px;
@@ -30,7 +27,7 @@ i.connection-existing.ion-ios-checkmark-outline {
 }
 
 .partner {
-  padding-top: 60px;
+  padding-top: 40px;
 }
 
 .scroll-wrap {
@@ -53,6 +50,7 @@ button.suggestion-send-btn {
   min-height: 30px;
   line-height: 23px;
   margin-right: 10px;
+  width: 100px;
 }
 
 .scroll-view {
@@ -69,7 +67,7 @@ swipe-card {
   position: fixed;
   -webkit-transform: scale(1,1);
   left: 0%;
-  top: -20px;
+  bottom: 0%;
   width: calc(100% - 20px);
   height: 37%;
   box-sizing: border-box;

@@ -82,8 +82,16 @@ mod.controller("partner", ['$scope', '$rootScope', '$stateParams', '$timeout', '
                         $scope.isPlaying = true;
                         $scope.hasPlayed = true;
 
-                        var msg = new SpeechSynthesisUtterance($scope.aacuser.blocks[0].value);
-                        window.speechSynthesis.speak(msg);
+                        if(ionic.Platform.isWindowsPhone()) {
+                            var msg = new SpeechSynthesisUtterance($scope.aacuser.blocks[0].value);
+                            window.speechSynthesis.speak(msg);
+                        } else {
+                            TTS.speak($scope.aacuser.blocks[0].value, function() {
+                                console.log('Done speaking');
+                            }, function (error) {
+                                console.log(error);
+                            })
+                        }
                     }
                     break;
 
