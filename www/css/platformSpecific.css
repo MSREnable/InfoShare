@@ -30,7 +30,7 @@ i.connection-existing.ion-ios-checkmark-outline {
 }
 
 .partner {
-  padding-top: 40px;
+  padding-top: 60px;
 }
 
 .scroll-wrap {
@@ -55,9 +55,23 @@ button.suggestion-send-btn {
   margin-right: 10px;
 }
 
+.scroll-view {
+  height: 100%;
+  overflow: hidden;
+}
+
+.swipe-cards {
+  position: fixed;
+}
+
 swipe-card {
   display: none;
+  position: fixed;
   -webkit-transform: scale(1,1);
+  left: 0%;
+  top: -20px;
+  width: calc(100% - 20px);
+  height: 37%;
   box-sizing: border-box;
   background-color: rgb(126,126,126);
   border-radius: 4px;
