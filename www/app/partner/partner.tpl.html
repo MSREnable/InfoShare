@@ -13,12 +13,12 @@
         <span class="item-note">{{formatTime(block.timestamp)}}</span>
       </div>
       
-      <label class="item item-input item-divider"
+      <div class="item item-input item-divider"
               ng-if="filter(block) && aacuser.info.state !== 3 && (aacuser.permissions.history !== 2 || inTimeRange(block.timestamp))">
         <i class="icon ion-share placeholder-icon"></i>
-        <input type="text" placeholder="Suggest a Word" ng-model="suggestion">
-        <button class="button button-outline button-positive suggestion-send-btn" ng-click="sendSuggestion()">Send</button>
-      </label>
+        <input type="text" placeholder="Suggest a Word" ng-model="model.suggestion">
+        <button type="button" class="button button-outline button-positive suggestion-send-btn" ng-click="sendSuggestion()">Send</button>
+      </div>
       
       <ion-scroll class="item item-text-wrap padding" ng-if="filter(block) && aacuser.info.state !== 3 && (aacuser.permissions.history !== 2 || inTimeRange(block.timestamp))">
         <p>{{filter(block)}}</p>
@@ -64,11 +64,14 @@
     <swipe-cards ng-if="cards.length > 0">
       <swipe-card class="card" ng-repeat="card in cards" on-card-swipe="cardSwiped()">
         <div class="item item-divider">
-          <h3>{{card.broadcast.type === 'general' ? 'Status Feed' : 'Communication Preferences'}}</h3>
+          <h3>{{card.broadcast.type === 'default' ? 'Communication Preferences' : 'Status Feed'}}</h3>
         </div>
-        <ion-scroll class="item item-text-wrap padding">
+        <ion-scroll class="item item-text-wrap padding" ng-if="card.broadcast.type !== 'image'">
           <p>{{card.broadcast.msg}}</p>
         </ion-scroll>
+        <div ng-if="card.broadcast.type === 'image'" class="item item-image padding">
+          <img ng-src="{{card.broadcast.src}}" />
+        </div>
       </swipe-card>
     </swipe-cards>
 

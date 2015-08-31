@@ -49,10 +49,20 @@ mod.factory('model', ['$rootScope', '$q', '$firebaseObject', '$firebaseArray', '
                 _.forEach(messages, function (message) {
                     generalMsgs.push(message);
                 });
-
-                console.log('Got general');
                 
                 gen.resolve();
+            });
+            
+            var imageMsgs = [];
+            var img = $q.defer();
+            broadcasts.child('image').child(uid).once('value', function(snap) {
+                var messages = snap.val();
+                
+                _.forEach(messages, function(message) {
+                    imageMsgs.push(message);
+                });
+                
+                img.resolve();
             });
 
             //Get the default messages
@@ -66,8 +76,6 @@ mod.factory('model', ['$rootScope', '$q', '$firebaseObject', '$firebaseArray', '
                         _.forEach(messages, function (message) {
                             defaultMsgs.push(message);
                         });
-                
-                        console.log('Got default');
 
                         def.resolve();
 
@@ -79,11 +87,9 @@ mod.factory('model', ['$rootScope', '$q', '$firebaseObject', '$firebaseArray', '
                     def.resolve();
                 }
             });
-                
-
 
             var loaded = $q.defer();
-            $q.all([gen.promise, def.promise]).then(function () {
+            $q.all([gen.promise, img.promise, def.promise]).then(function () {
                 broadcastCache.length = 0;
 
                 var i = 0;
@@ -102,6 +108,18 @@ mod.factory('model', ['$rootScope', '$q', '$firebaseObject', '$firebaseArray', '
                         id: i,
                         type: 'general',
                         msg: data
+                    });
+
+                    i++;
+                });
+
+                var base = 'https://infoshare.blob.core.windows.net/';
+                var cont = uid.split('_').join('-').split('--').join('-');
+                _.forEach(imageMsgs, function (data) {
+                    broadcastCache.push({
+                        id: i,
+                        type: 'image',
+                        src: base + cont + '/' + data.id + data.extension
                     });
 
                     i++;

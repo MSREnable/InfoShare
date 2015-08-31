@@ -5,6 +5,9 @@ mod.controller("partner", ['$scope', '$rootScope', '$stateParams', '$timeout', '
         // Binding Properties
         $scope.aacuser = model.loadCachedPartner($stateParams.cachedPartnerUid);
         $scope.isPlaying = false;
+        $scope.model = {
+            suggestion: ""
+        };
 
         $scope.cards = [];
         
@@ -41,10 +44,10 @@ mod.controller("partner", ['$scope', '$rootScope', '$stateParams', '$timeout', '
         };
 
         $scope.sendSuggestion = function () {
-            console.log("Suggestion: " + $scope.suggestion);
+            console.log("Suggestion: " + $scope.model.suggestion);
             var blockID = $scope.aacuser.blocks[0].$id;
-            model.sendSuggestion($scope.aacuser.uid, blockID, $scope.suggestion);
-            $scope.suggestion = "";
+            model.sendSuggestion($scope.aacuser.uid, blockID, $scope.model.suggestion);
+            $scope.model.suggestion = "";
         };
         
         // Display time of message correctly
