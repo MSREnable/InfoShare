@@ -15,7 +15,8 @@ In order to build and deploy the app to a Windows Phone, build the Windows Phone
 
 ## OS X Instructions
 
-Install NodeJS, Sass, Android Studio, and the Android SDK Platform 22 (from the Android SDK Manager). From the project directory, run `npm install -g cordova ionic`, 'npm install', `bower install`, and `ionic restore state`. 
+Install NodeJS, Sass, Android Studio, and the Android SDK Platform 22 (from the Android SDK Manager).
+From the project directory, run `npm install -g cordova ionic`, `npm install`, `bower install`, and `ionic restore state`. 
 This should load all dependencies and generate android and iOS projects. Run `ionic build ios` or `ionic build android` to build the project for ios or android. 
 To run on an attached Android device, run `ionic run android`.
 To run on an iOS device, you must be registered under the Apple Developer program. Once you are, you can run `ionic run ios` or open the xCode project under `.\platforms\ios` to deploy to your iPhone.
