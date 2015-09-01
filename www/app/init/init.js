@@ -13,7 +13,8 @@ function uidToEmail(uid) {
 };
 
 mod.controller('init', ['$scope', '$state', 'auth', 'model',
-    function ($scope, $state, auth,  model) {        
+    function ($scope, $state, auth, model) {
+        // Todo: Remove temporary user
         $scope.user = {
           first: "John",
           last: "Doe",
@@ -21,10 +22,6 @@ mod.controller('init', ['$scope', '$state', 'auth', 'model',
         };
 
         $scope.setUid = function () {
-            // Hide the keyboard before navigating away from this page
-            //var curr = Windows.UI.ViewManagement.InputPane.getForCurrentView();
-            //curr.tryHide();
-
             // Set this person's uid and save them as a new user if their uid doesn't already exist
             window.localStorage.setItem('uid', emailToUid($scope.user.email));
             window.localStorage.setItem('firstName', $scope.user.first);
