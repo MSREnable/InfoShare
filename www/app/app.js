@@ -40,14 +40,22 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
       controller: 'partner'
     });
     
-    $urlRouterProvider.otherwise("/init");
+  $urlRouterProvider.otherwise("/init");
 }]);
 
-app.run(['$state', '$ionicPlatform', function($state, $ionicPlatform) {
+app.run(['$rootScope', '$state', '$ionicPlatform', function ($rootScope, $state, $ionicPlatform) {
+
+  $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
+    if (toState.name === 'init' && window.localStorage.getItem('uid')) {
+      event.preventDefault();
+      $state.go('home');
+    }
+  });
+
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
-      if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
+    if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
       cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
     }
     
