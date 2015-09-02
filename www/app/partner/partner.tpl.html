@@ -1,81 +1,83 @@
 <ion-view view-title="{{aacuser.info.first}} {{aacuser.info.last}}">
-  <ion-pane class="partner">
-    <!-- Area for displaying the current communication blocks -->
-    <div ng-if="aacuser.info.connected" class="list card {{conditionalClasses(filter(block))}}" ng-repeat="block in aacuser.blocks">
-      <div class="item item-avatar">
-        <img gravatar-src="'{{aacuser.email}}'">
-        <h2>{{aacuser.info.connected ? 'Online' : 'Offline'}}</h2>
-        <p>{{aacuser.info.connected ? getStateString(aacuser.info.state) : ''}}</p>
-      </div>
-      
-      <div class="item item-divider block-meta" ng-if="filter(block) && aacuser.info.state !== 3">
-        <ion-spinner icon="dots" ng-if="aacuser.info.state === 1"></ion-spinner>
-        <span class="item-note">{{formatTime(block.timestamp)}}</span>
-      </div>
-      
-      <div class="item item-input item-divider"
-              ng-if="filter(block) && aacuser.info.state !== 3 && (aacuser.permissions.history !== 2 || inTimeRange(block.timestamp))">
-        <i class="icon ion-share placeholder-icon"></i>
-        <input type="text" placeholder="Suggest a Word" ng-model="model.suggestion">
-        <button type="button" class="button button-outline button-positive suggestion-send-btn" ng-click="sendSuggestion()">Send</button>
-      </div>
-      
-      <div class="scroll-wrap">
-        <ion-scroll class="item item-text-wrap padding" ng-if="filter(block) && aacuser.info.state !== 3 && (aacuser.permissions.history !== 2 || inTimeRange(block.timestamp))">
-          <p>{{filter(block)}}</p>
-        </ion-scroll>
-      </div>
-      
-      <div ng-if="!filter(block) && aacuser.info.state === 0" class="item item-icon-left royal">
-        <i class="icon ion-ios-information-outline"></i>
-        <span>No Communication To Display!</span>
-      </div>
-      
-      <div ng-if="!filter(block) && aacuser.info.state === 1" class="item" >
-        <ion-spinner icon="dots"></ion-spinner>
-      </div>
-      
-      <div ng-if="!filter(block) && aacuser.info.state === 2" class="item" >
-        <p>{{aacuser.info.first}} is speaking...</p>
-      </div>
-      
-      <div ng-if="aacuser.info.state === 3" class="item item-icon-left item-text-wrap positive">
-        <i class="icon ion-ios-information-outline"></i>
-        <span>{{aacuser.info.first}} is calibrating the eye-gaze sensor. This may take a while.</span>
-      </div>
-    </div>
-    
-    <!-- Section to display when the user is brand new -->
-    <div class="card" ng-if="!aacuser.blocks.length || !aacuser.info.connected">
-      <div class="item item-avatar">
-        <img gravatar-src="'{{aacuser.email}}'">
-        <h2>{{aacuser.info.connected ? 'Online' : 'Offline'}}</h2>
-        <p>{{aacuser.info.connected ? getStateString(aacuser.info.state) : ''}}</p>
-      </div>
-      <div ng-if="aacuser.info.connected" class="item item-icon-left royal">
-        <i class="icon ion-ios-information-outline"></i>
-        <span>No Communication To Display!</span>
-      </div>
-      <div ng-if="!aacuser.info.connected" class="item item-icon-left item-text-wrap assertive">
-        <i class="icon ion-ios-close-outline"></i>
-        <span>{{aacuser.info.first}} does not have the Eye-Gaze Keyboard app running. Please check to make sure the Eye-Gaze Keyboard app is not malfunctioning.</span>
-      </div>
-    </div>
-    
-    <!-- Area for displaying the broadcasts -->
-    <swipe-cards ng-if="cards.length > 0">
-      <swipe-card class="card" ng-repeat="card in cards" on-card-swipe="cardSwiped()">
-        <div class="item item-divider">
-          <h3>{{card.broadcast.type === 'default' ? 'Communication Preferences' : 'Status Feed'}}</h3>
-        </div>
-        <ion-scroll class="item item-text-wrap padding" ng-if="card.broadcast.type !== 'image'">
-          <p>{{card.broadcast.msg}}</p>
-        </ion-scroll>
-        <div ng-if="card.broadcast.type === 'image'" class="item item-image padding">
-          <img ng-src="{{card.broadcast.src}}" />
-        </div>
-      </swipe-card>
-    </swipe-cards>
+    <ion-pane class="partner">
+        <!-- Area for displaying the current communication blocks -->
+        <div ng-if="aacuser.info.connected" class="list card {{conditionalClasses(filter(block))}}" ng-repeat="block in aacuser.blocks">
+            <div class="item item-avatar">
+                <img gravatar-src="'{{aacuser.email}}'">
+                <h2>{{aacuser.info.connected ? 'Online' : 'Offline'}}</h2>
+                <p>{{aacuser.info.connected ? getStateString(aacuser.info.state) : ''}}</p>
+            </div>
 
-  </ion-pane>
+            <div class="item item-divider block-meta" ng-if="filter(block) && aacuser.info.state !== 3">
+                <ion-spinner icon="dots" ng-if="aacuser.info.state === 1"></ion-spinner>
+                <span class="item-note">{{formatTime(block.timestamp)}}</span>
+            </div>
+
+            <div class="item item-input item-divider"
+                 ng-if="filter(block) && aacuser.info.state !== 3 && (aacuser.permissions.history !== 2 || inTimeRange(block.timestamp))">
+                <i class="icon ion-share placeholder-icon"></i>
+                <input type="text" placeholder="Suggest a Word" ng-model="model.suggestion">
+                <button type="button" class="button button-outline button-positive suggestion-send-btn" ng-click="sendSuggestion()">Send</button>
+            </div>
+
+            <div class="scroll-wrap">
+                <ion-scroll class="item item-text-wrap padding" ng-if="filter(block) && aacuser.info.state !== 3 && (aacuser.permissions.history !== 2 || inTimeRange(block.timestamp))">
+                    <p>{{filter(block)}}</p>
+                </ion-scroll>
+            </div>
+
+            <div ng-if="!filter(block) && aacuser.info.state === 0" class="item item-icon-left royal">
+                <i class="icon ion-ios-information-outline"></i>
+                <span>No Communication To Display!</span>
+            </div>
+
+            <div ng-if="!filter(block) && aacuser.info.state === 1" class="item">
+                <ion-spinner icon="dots"></ion-spinner>
+            </div>
+
+            <div ng-if="!filter(block) && aacuser.info.state === 2" class="item">
+                <p>{{aacuser.info.first}} is speaking...</p>
+            </div>
+
+            <div ng-if="aacuser.info.state === 3" class="item item-icon-left item-text-wrap positive">
+                <i class="icon ion-ios-information-outline"></i>
+                <span>{{aacuser.info.first}} is calibrating the eye-gaze sensor. This may take a while.</span>
+            </div>
+        </div>
+
+        <!-- Section to display when the user is brand new -->
+        <div class="card" ng-if="!aacuser.blocks.length || !aacuser.info.connected">
+            <div class="item item-avatar">
+                <img gravatar-src="'{{aacuser.email}}'">
+                <h2>{{aacuser.info.connected ? 'Online' : 'Offline'}}</h2>
+                <p>{{aacuser.info.connected ? getStateString(aacuser.info.state) : ''}}</p>
+            </div>
+            <div ng-if="aacuser.info.connected" class="item item-icon-left royal">
+                <i class="icon ion-ios-information-outline"></i>
+                <span>No Communication To Display!</span>
+            </div>
+            <div ng-if="!aacuser.info.connected" class="item item-icon-left item-text-wrap assertive">
+                <i class="icon ion-ios-close-outline"></i>
+                <span>{{aacuser.info.first}} does not have the Eye-Gaze Keyboard app running. Please check to make sure the Eye-Gaze Keyboard app is not malfunctioning.</span>
+            </div>
+        </div>
+
+        <!-- Area for displaying the broadcasts -->
+        <ion-slide-box class="broadcasts" show-pager="false" does-continue="true">
+            <ion-slide ng-repeat="card in aacuser.broadcasts">
+                <div class="card">
+                    <div class="item item-divider">
+                        <h3>{{card.type === 'default' ? 'Communication Preferences' : 'Status Feed'}}</h3>
+                    </div>
+                    <ion-scroll class="item item-text-wrap padding" ng-if="card.type !== 'image'">
+                        <p>{{card.msg}}</p>
+                    </ion-scroll>
+                    <div ng-if="card.type === 'image'" class="item item-image padding">
+                        <img ng-src="{{card.src}}" />
+                    </div>
+                </div>
+            </ion-slide>
+        </ion-slide-box>
+
+    </ion-pane>
 </ion-view>

@@ -1,35 +1,16 @@
 var mod = angular.module('InfoShare.partner', ['firebase', 'common.model', 'ionic.contrib.ui.cards']);
 
-mod.controller("partner", ['$scope', '$rootScope', '$stateParams', '$timeout', '$firebaseObject', '$firebaseArray', 'model',
-    function ($scope, $rootScope, $stateParams, $timeout, $firebaseObject, $firebaseArray, model) {
+mod.controller("partner", ['$scope', '$rootScope', '$stateParams', '$timeout', '$firebaseObject', '$firebaseArray', 'model', '$ionicSlideBoxDelegate',
+    function ($scope, $rootScope, $stateParams, $timeout, $firebaseObject, $firebaseArray, model, $ionicSlideBoxDelegate) {
         // Binding Properties
         $scope.aacuser = model.loadCachedPartner($stateParams.cachedPartnerUid);
         $scope.isPlaying = false;
         $scope.model = {
             suggestion: ""
         };
-
-        $scope.cards = [];
-        
-        $scope.cardSwiped = function() {
-          $scope.cards.splice(0, 1);
-          
-          if($scope.aacuser.broadcasts.length !== 0)
-            $scope.cards.push({ broadcast: nextBroadcast()});
-        };
-        
-        var index = -1;
-        
-        function nextBroadcast() {          
-          index++;
-          
-          if(index === $scope.aacuser.broadcasts.length) index = 0;
-          
-          return $scope.aacuser.broadcasts[index];
-        }
-        
+              
         $scope.aacuser.broadcasts.loaded.then(function(){
-          $scope.cardSwiped();
+          $ionicSlideBoxDelegate.update();
         });
         
         $scope.conditionalClasses = function(filtered) {
