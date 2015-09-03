@@ -37,7 +37,16 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
     state('partner', {
       url: '/partner?cachedPartnerUid',
       templateUrl: 'app/partner/partner.tpl.html',
-      controller: 'partner'
+      controller: 'partner',
+      resolve: {
+        model: 'model'
+      },
+      onEnter: ['$stateParams', 'model', function ($stateParams, model) {
+        model.startListening($stateParams.cachedPartnerUid);
+      }],
+      onExit: ['$stateParams', 'model', function ($stateParams, model) {
+        model.stopListening($stateParams.cachedPartnerUid);
+      }]
     });
     
   $urlRouterProvider.otherwise("/init");
