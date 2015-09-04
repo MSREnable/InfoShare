@@ -1,4 +1,8 @@
-﻿span.connection-name {
+﻿.pane {
+    background-color: #848484;
+}
+
+span.connection-name {
   font-size: 20px;
   position: absolute;
   top: 50%;
