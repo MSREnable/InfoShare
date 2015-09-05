@@ -1,4 +1,7 @@
 <ion-view view-title="Start a Conversation" hide-back-button="true">
+    <ion-nav-buttons side="right">
+        <button class="button" ng-click="logout()">Logout</button>
+    </ion-nav-buttons>
   <ion-content>
     <ion-list>
       <ion-item ng-repeat="partner in aacuserCache" class="item-avatar-left" ng-click="selectUser(partner)">
@@ -18,9 +21,6 @@
           <h2>New</h2>
           <p>Connection</p>
       </ion-item>
-        <!--<ion-item>
-            <button type="button" class="button button-outline button-positive suggestion-send-btn" ng-click="reset()">Reset</button>
-        </ion-item>-->
     </ion-list>
   </ion-content>
 </ion-view>

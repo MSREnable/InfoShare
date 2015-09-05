@@ -16,9 +16,9 @@ mod.controller('init', ['$scope', '$state', 'auth', 'model',
     function ($scope, $state, auth, model) {
         // Todo: Remove temporary user
         $scope.user = {
-          first: "John",
-          last: "Doe",
-          email: "johnny@doe.com"
+          first: "",
+          last: "",
+          email: ""
         };
 
         $scope.setUid = function () {

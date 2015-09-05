@@ -174,8 +174,9 @@ mod.factory('model', ['$rootScope', '$q', '$firebaseObject', '$firebaseArray', '
                 return isNewUser;
             },
 
-            getPartners: function(uid) {
-                if (!partnerRef) {
+            getPartners: function (uid) {
+              if (!partnerRef) {
+                console.log('Creating partner cache');
                     partnerRef = partners.child(uid);
 
                     partnerRef.once('value', function (partners) {
@@ -207,6 +208,14 @@ mod.factory('model', ['$rootScope', '$q', '$firebaseObject', '$firebaseArray', '
                 }
 
                 return partnerCache;
+            },
+
+            resetPartnerCache: function() {
+              if(partnerRef) {
+                partnerRef.off();
+                partnerRef = null;
+                partnerCache = [];
+              }
             },
 
             getPending: function(uid) {
