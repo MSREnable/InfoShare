@@ -20,3 +20,7 @@ From the project directory, run `npm install -g cordova ionic`, `npm install`, `
 This should load all dependencies and generate android and iOS projects. Run `ionic build ios` or `ionic build android` to build the project for ios or android. 
 To run on an attached Android device, run `ionic run android`.
 To run on an iOS device, you must be registered under the Apple Developer program. Once you are, you can run `ionic run ios` or open the xCode project under `.\platforms\ios` to deploy to your iPhone.
+
+# Setting Up a New Pair of Users
+
+First and foremost, ensure that the settings file for the keyboard (`%appdata%\Microsoft\Microsoft Research Enable\setting.xml`) has been updated to contain the keyboard user's email! Also, add two fields to this XML document as siblings to the email field: `<First><\First>` (the user's first name) and `<Last><\Last>` (the user's last name). This will ensure that a new user account is created in the Firebase backend of the InfoShare app. After this has been done, the communication partner simply needs to install the mobile app on their phone, provide their email and name on the initial launch of the app and they will be good to go.
