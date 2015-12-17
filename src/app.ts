@@ -21,22 +21,22 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
   $stateProvider.
     state('init', {
       url: '/init',
-      templateUrl: 'app/init/init.tpl.html',
+      templateUrl: 'views/init.tpl.html',
       controller: 'init'
     }).
     state('home', {
       url: '/',
-      templateUrl: 'app/home/home.tpl.html',
+      templateUrl: 'views/home.tpl.html',
       controller: 'home'
     }).
     state('connect', {
       url: '/',
-      templateUrl: 'app/connect/connect.tpl.html',
+      templateUrl: 'views/connect.tpl.html',
       controller: 'connect'
     }).
     state('partner', {
       url: '/partner?cachedPartnerUid',
-      templateUrl: 'app/partner/partner.tpl.html',
+      templateUrl: 'views/partner.tpl.html',
       controller: 'partner',
       resolve: {
         model: 'model'
