@@ -1,4 +1,4 @@
-﻿# InfoShare: The Eye-Gaze Keyboard Companion App for Enhancing AAC Device User Communication
+﻿# AACrobat: The Eye-Gaze Keyboard Companion App for Enhancing AAC Device User Communication
 
 Please direct questions to Alex Fiannaca (fiannac4@live.com)
 
@@ -12,6 +12,10 @@ Install Visual Studio 2015 with the support tools for Cordova projects. If you a
 Before loading the solution in Visual Studio, start a command prompt in the project directory and run `npm install` and `bower install` to install dependencies.
 After installing the dependencies, you can load the Visual Studio project.
 In order to build and deploy the app to a Windows Phone, build the Windows Phone (Universal) target, **NOT** the Windows Phone 8 target.
+
+If you are not using VS2015, you can simply install cordava and ionic at the command line with `npm install -g ionic cordova`, 
+run `npm install` and `bower install` to install dependencies, and then run `ionic serve` to launch a development server (and 
+the associated gulp process for building the app).
 
 ## OS X Instructions
 

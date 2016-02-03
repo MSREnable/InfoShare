@@ -1,7 +1,7 @@
 var mod = angular.module('InfoShare.home', ['common.auth', 'common.model']);
 
-mod.controller('home', ['$scope', '$rootScope', '$state', 'auth', 'model',
-    function ($scope, $rootScope, $state, auth, model) {
+mod.controller('home', ['$scope', '$rootScope', '$state', '$ionicHistory', 'auth', 'model',
+    function ($scope, $rootScope, $state, $ionicHistory, auth, model) {
         // Binding Properties
         $scope.me = window.localStorage.getItem('firstName');
         $scope.aacuserCache = model.getPartners(window.localStorage.getItem('uid'));
@@ -25,14 +25,14 @@ mod.controller('home', ['$scope', '$rootScope', '$state', 'auth', 'model',
         };
 
         $scope.logout = function () {
-          window.localStorage.removeItem('uid');
-          window.localStorage.removeItem('firstName');
-          window.localStorage.removeItem('lastName');
-
           model.resetPartnerCache();
 
-          //auth.logout();
-
+          auth.logout();
+          
+          $ionicHistory.nextViewOptions({
+              historyRoot: true
+          });
+          
           $state.go('init');
         }
     }

@@ -3,7 +3,7 @@
 // angular.module is a global place for creating, registering and retrieving Angular modules
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
-var app = angular.module('InfoShare', ['ionic', 'InfoShare.init', 'InfoShare.home', 'InfoShare.connect', 'InfoShare.partner', 'ui.gravatar']);
+var app = angular.module('InfoShare', ['ionic', 'InfoShare.init', 'InfoShare.home', 'InfoShare.connect', 'InfoShare.partner', 'common.auth', 'ui.gravatar']);
 
 angular.module('ui.gravatar').config([
   'gravatarServiceProvider', function (gravatarServiceProvider) {
@@ -17,7 +17,9 @@ angular.module('ui.gravatar').config([
   }
 ]);
 
-app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {
+var db = null;
+
+app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) { 
   $stateProvider.
     state('init', {
       url: '/init',
@@ -49,15 +51,46 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
       }]
     });
     
+//   db = $cordovaSQLite.openDB("my.db");
+//   $cordovaSQLite.execute(db, "CREATE TABLE IF NOT EXISTS userinfo (id integer primary key, uid text)");
+  
+//   var query = "SELECT uid FROM userinfo";
+//   $cordovaSQLite.execute(db, query).then(function(res) {
+//       if(res.rows.length > 0) {
+//           console.log("SELECTED -> " + res.rows.item(0).uid);
+//           $urlRouterProvider.otherwise("/");
+//       } else {
+//           console.log("No results found");
+//           $urlRouterProvider.otherwise("/init");
+//       }
+//   }, function (err) {
+//       console.error(err);
+//       $urlRouterProvider.otherwise("/init");
+//   });
+        
   $urlRouterProvider.otherwise("/init");
 }]);
 
-app.run(['$rootScope', '$state', '$ionicPlatform', function ($rootScope, $state, $ionicPlatform) {
-
+app.run(['$rootScope', '$state', 'auth', '$ionicPlatform', function ($rootScope, $state, auth, $ionicPlatform) {
   $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
-    if (toState.name === 'init' && window.localStorage.getItem('uid')) {
-      event.preventDefault();
-      $state.go('home');
+    if(toState.name !== 'init' && !auth.isLoggedIn()) {
+        console.log('User must log in to access the app!');
+        event.preventDefault();
+        $state.go('init');
+    } else if (toState.name === 'init' && auth.isLoggedIn()) {
+        console.log('User is logged in. Redirecting to home page');
+        event.preventDefault();
+        $state.go('home');
+    } else if (toState.name === 'init' && !auth.isLoggedIn() && window.localStorage.getItem('uid')) {
+        console.log('User is not logged in but is known. Logging user in.');
+        event.preventDefault();
+        auth.login(window.localStorage.getItem('uid')).then(function() {
+            $state.go('home');
+        }, function(reason) {
+            $state.go('init');
+        });
+    } else {
+        console.log('Other navigation occurred');
     }
   });
 

@@ -1,7 +1,7 @@
 {
-  "name": "infoshare",
+  "name": "aacrobat",
   "version": "1.0.0",
-  "description": "InfoShare: An Ionic project",
+  "description": "AACrobat: Mobile companion app for the Microsoft Eyegaze Keyboard",
   "dependencies": {
     "gulp": "^3.5.6",
     "gulp-sass": "^1.3.3",

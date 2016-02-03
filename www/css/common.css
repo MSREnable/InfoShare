@@ -2,6 +2,10 @@
     background-color: #848484;
 }
 
+.login-item {
+    background-color: white;
+}
+
 span.connection-name {
   font-size: 20px;
   position: absolute;

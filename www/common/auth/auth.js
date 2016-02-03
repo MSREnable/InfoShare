@@ -1,44 +1,80 @@
 var mod = angular.module('common.auth', ['firebase']);
 
-mod.factory('auth', ['$firebaseAuth',
-  function ($firebaseAuth) {
+mod.factory('auth', ['$firebaseAuth', '$q', '$rootScope', 
+  function ($firebaseAuth, $q, $rootScope) {
       var instance = {};
 
+      instance.isLoggedIn = function() {
+          return instance.auth != null && instance.auth.$getAuth();
+      }
+      
       instance.logout = function () {
         if (instance.auth) {
           instance.auth.$unauth();
+          
+          instance.auth = null;
+          
+          window.localStorage.removeItem('uid');
+          window.localStorage.removeItem('firstName');
+          window.localStorage.removeItem('lastName');
+          
+          $rootScope.$broadcast('logout');
         }
       };
 
-      instance.init = function (userID, callback) {
-          var ref = new Firebase("https://coconstruct.firebaseio.com/users");
-          var auth = $firebaseAuth(ref);
+      function userExists(uid) {
+        var deferred = $q.defer();
 
-          var tokenGenerator = new FirebaseTokenGenerator("9mxGEBWfOIFvCjXczz04CjG69W0BIKoMJ341Jtf1");
+        var users = new Firebase("https://aacrobat.firebaseio.com/users");
 
-          var token = tokenGenerator.createToken(
-            { uid: userID }
-          );
+        users.child(uid).once("value", function (snap) {
+            if (!snap.exists()) {
+                deferred.reject("Email incorrect!");
+            } else {
+                deferred.resolve(snap.val());
+            }
+        }, function (error) {
+            deferred.reject(error);
+        });
 
-          auth.$authWithCustomToken(token).then(function (authdata) {
-              console.log("Logged in as: " + authdata.uid);
-              if(callback) callback(authdata);
-          }).catch(function (error) {
-              console.log("Error: Could not log into Firebase");
-          });
+        return deferred.promise;
+      };
+      
+      var gen = new FirebaseTokenGenerator("VpkncBQ0KFa7zGKbzegh4wBt1ha8mTMwhKq0hwsO");
+        
+      instance.login = function (userID) {
+          var deferred = $q.defer();
+          
+          var ref = new Firebase("https://aacrobat.firebaseio.com/");
+          instance.auth = $firebaseAuth(ref);
 
-          instance.auth = auth;
+          instance.auth.$authWithCustomToken(gen.createToken({ uid: userID }))
+            .then(function (authdata) {
+                userExists(userID).then(function(user) {
+                    console.log("Logged in as: " + authdata.uid);
+                    deferred.resolve(user);
+                }, function(reason) {
+                    instance.auth.$unauth();
+                    deferred.reject();
+                });
+            }, function (error) {
+                console.log("Error: Could not log into Firebase");
+                instance.auth = null;
+                deferred.reject();
+            });
+          
+          return deferred.promise;
       };
 
       // Lookup the current user
-      var currentUser = window.localStorage.getItem('uid');
+    //   var currentUser = window.localStorage.getItem('uid');
 
-      if (!currentUser || currentUser == null) {
-          console.log('Auth cannot take place until the current user\'s email address has been set!');
-          instance.auth = null;
-      } else {
-          instance.init(currentUser);
-      }
+    //   if (!currentUser || currentUser == null) {
+    //       console.log('Auth cannot take place until the current user\'s email address has been set!');
+    //       instance.auth = null;
+    //   } else {
+    //       instance.login(currentUser);
+    //   }
 
       return instance;
   }

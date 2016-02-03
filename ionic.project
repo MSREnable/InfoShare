@@ -1,6 +1,6 @@
 {
-  "name": "InfoShare",
-  "app_id": "f8699f97",
+  "name": "AACrobat",
+  "app_id": "40f86125",
   "gulpStartupTasks": [
     "sass",
     "watch"

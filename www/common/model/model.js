@@ -2,15 +2,15 @@ var mod = angular.module('common.model', ['firebase', 'common.auth']);
 
 mod.factory('model', ['$rootScope', '$q', '$firebaseObject', '$firebaseArray', 'auth',
     function ($rootScope, $q, $firebaseObject, $firebaseArray, auth) {
-        var blocks = new Firebase("https://coconstruct.firebaseio.com/blocks");
-        var users = new Firebase("https://coconstruct.firebaseio.com/users");
-        var partners = new Firebase("https://coconstruct.firebaseio.com/partners");
-        var requests = new Firebase("https://coconstruct.firebaseio.com/requests");
-        var pending = new Firebase("https://coconstruct.firebaseio.com/pending");
-        var listeners = new Firebase("https://coconstruct.firebaseio.com/listeners");
-        var permissions = new Firebase("https://coconstruct.firebaseio.com/permissions");
-        var broadcasts = new Firebase("https://coconstruct.firebaseio.com/broadcasts");
-        var suggestions = new Firebase("https://coconstruct.firebaseio.com/suggestions");
+        var blocks = new Firebase("https://aacrobat.firebaseio.com/blocks");
+        var users = new Firebase("https://aacrobat.firebaseio.com/users");
+        var partners = new Firebase("https://aacrobat.firebaseio.com/partners");
+        var requests = new Firebase("https://aacrobat.firebaseio.com/requests");
+        var pending = new Firebase("https://aacrobat.firebaseio.com/pending");
+        var listeners = new Firebase("https://aacrobat.firebaseio.com/listeners");
+        var permissions = new Firebase("https://aacrobat.firebaseio.com/permissions");
+        var broadcasts = new Firebase("https://aacrobat.firebaseio.com/broadcasts");
+        var suggestions = new Firebase("https://aacrobat.firebaseio.com/suggestions");
 
         var partnerCache = [];
         var pendingCache = [];
@@ -33,6 +33,40 @@ mod.factory('model', ['$rootScope', '$q', '$firebaseObject', '$firebaseArray', '
             }
         };
 
+        // $rootScope.$on('logout', function(){
+        //     console.log('Destroying resources');
+            
+        //     if(partnerRef) partnerRef.off();
+        //     if(pendingRef) pendingRef.off();
+            
+        //     for(var idx in partnerCache) {
+        //         var partner = partnerCache[idx];
+                
+        //         if(partner.permissions) {
+        //             partner.permissions.$destroy();
+        //             partner.permissions = null;
+        //         }
+                
+        //         if(partner.blocks) {
+        //             partner.blocks.$destroy();
+        //             partner.blocks = null;
+        //         }
+                
+        //         if(partner.level) {
+        //             partner.level.$destroy();
+        //             partner.level = null;
+        //         }
+                
+        //         if(partner.info) {
+        //             partner.info.$destroy();
+        //             partner.info = null;
+        //         }
+        //     }
+            
+        //     partnerCache = [];
+        //     partnerRef = [];
+        // });
+        
         function _uidToEmail (uid) {
             var tmp = uid.split('__at__').join('@');
             tmp = tmp.split('__dot__').join('.');
@@ -132,10 +166,10 @@ mod.factory('model', ['$rootScope', '$q', '$firebaseObject', '$firebaseArray', '
             
             return broadcastCache;
         }
-
+            
         return {
             connect: function() {
-                if (window.localStorage.getItem('uid')) {
+                if (auth.isLoggedIn() && window.localStorage.getItem('uid')) {
                     users.child(window.localStorage.getItem('uid')).child('connected').set(true);
                 }
             },
@@ -143,7 +177,7 @@ mod.factory('model', ['$rootScope', '$q', '$firebaseObject', '$firebaseArray', '
             disconnect: function () {
                 var deferred = $q.defer();
 
-                if (window.localStorage.getItem('uid')) {
+                if (auth.isLoggedIn() && window.localStorage.getItem('uid')) {
                     users.child(window.localStorage.getItem('uid')).child('connected').set(false, function (error) {
                         if (error) {
                             deferred.reject(error)
@@ -159,23 +193,31 @@ mod.factory('model', ['$rootScope', '$q', '$firebaseObject', '$firebaseArray', '
             },
 
             startListening: function (id) {
-                listeners.child(id).child(window.localStorage.getItem('uid')).set(true);
+                if(auth.isLoggedIn()) {
+                    listeners.child(id).child(window.localStorage.getItem('uid')).set(true);
+                }
             },
 
             stopListening: function (id) {
-                listeners.child(id).child(window.localStorage.getItem('uid')).set(null);
+                if(auth.isLoggedIn()) {
+                    listeners.child(id).child(window.localStorage.getItem('uid')).set(null);
+                }
             },
 
             getUsers: function () {
-                return $firebaseArray(users);
+                if(auth.isLoggedIn()) {
+                    return $firebaseArray(users);
+                }
+                
+                return [];
             },
 
             isUserNew: function() {
                 return isNewUser;
             },
-
+            
             getPartners: function (uid) {
-              if (!partnerRef) {
+              if (auth.isLoggedIn() && !partnerRef) {
                 console.log('Creating partner cache');
                     partnerRef = partners.child(uid);
 
@@ -211,7 +253,7 @@ mod.factory('model', ['$rootScope', '$q', '$firebaseObject', '$firebaseArray', '
             },
 
             resetPartnerCache: function() {
-              if(partnerRef) {
+              if(auth.isLoggedIn() && partnerRef) {
                 partnerRef.off();
                 partnerRef = null;
                 partnerCache = [];
@@ -219,7 +261,7 @@ mod.factory('model', ['$rootScope', '$q', '$firebaseObject', '$firebaseArray', '
             },
 
             getPending: function(uid) {
-                if (!pendingRef) {
+                if (auth.isLoggedIn() && !pendingRef) {
                     pendingRef = pending.child(uid);
                     
                     pendingRef.on('child_added', function (added) {
@@ -239,6 +281,8 @@ mod.factory('model', ['$rootScope', '$q', '$firebaseObject', '$firebaseArray', '
             },
 
             loadCachedPartner: function (uid) {
+                if(!auth.isLoggedIn()) return null;
+                
                 var partner = _.find(partnerCache, function (p) {
                     return p.uid === uid;
                 });
@@ -253,84 +297,98 @@ mod.factory('model', ['$rootScope', '$q', '$firebaseObject', '$firebaseArray', '
             },
 
             sendSuggestion: function(aacuser, blockID, suggestion) {
-                suggestions.child(aacuser).child(blockID).push(suggestion);
+                if(auth.isLoggedIn()) {
+                    suggestions.child(aacuser).child(blockID).push(suggestion);
+                }
             },
             
             sendConnectionRequest: function (uid) {
-                console.log('Sending partner request...');
+                if(auth.isLoggedIn()) {
+                    console.log('Sending partner request...');
 
-                var req = $q.defer();
+                    var req = $q.defer();
 
-                requests.child(uid).child(window.localStorage.getItem('uid')).set(Firebase.ServerValue.TIMESTAMP, function (error) {
-                    if (error) {
-                        req.reject(error)
-                    } else {
-                        req.resolve();
-                    }
-                });
+                    requests.child(uid).child(window.localStorage.getItem('uid')).set(Firebase.ServerValue.TIMESTAMP, function (error) {
+                        if (error) {
+                            req.reject(error)
+                        } else {
+                            req.resolve();
+                        }
+                    });
+                    
+                    var pen = $q.defer();
+                    
+                    pending.child(window.localStorage.getItem('uid')).child(uid).set(Firebase.ServerValue.TIMESTAMP, function (error) {
+                        if (error) {
+                            pen.reject(error)
+                        } else {
+                            pen.resolve();
+                        }
+                    });
+
+                    return $q.all([req.promise, pen.promise]);
+                }
                 
-                var pen = $q.defer();
-                
-                pending.child(window.localStorage.getItem('uid')).child(uid).set(Firebase.ServerValue.TIMESTAMP, function (error) {
-                    if (error) {
-                        pen.reject(error)
-                    } else {
-                        pen.resolve();
-                    }
-                });
-
-                return $q.all([req.promise, pen.promise]);
+                var tmp = $q.defer();
+                tmp.reject();
+                return tmp.promise;
             },
             
             deleteConnectionRequest: function (uid) {
-                console.log('Deleting partner request...');
+                if(auth.isLoggedIn()) {
+                    console.log('Deleting partner request...');
 
-                var req = $q.defer();
+                    var req = $q.defer();
 
-                requests.child(uid).child(window.localStorage.getItem('uid')).set(null, function (error) {
-                    if (error) {
-                        req.reject(error)
-                    } else {
-                        req.resolve();
-                    }
-                });
+                    requests.child(uid).child(window.localStorage.getItem('uid')).set(null, function (error) {
+                        if (error) {
+                            req.reject(error)
+                        } else {
+                            req.resolve();
+                        }
+                    });
+                    
+                    var pen = $q.defer();
+                    
+                    pending.child(window.localStorage.getItem('uid')).child(uid).set(null, function (error) {
+                        if (error) {
+                            pen.reject(error)
+                        } else {
+                            pen.resolve();
+                        }
+                    });
+
+                    return $q.all([req.promise, pen.promise]);
+                }
                 
-                var pen = $q.defer();
-                
-                pending.child(window.localStorage.getItem('uid')).child(uid).set(null, function (error) {
-                    if (error) {
-                        pen.reject(error)
-                    } else {
-                        pen.resolve();
-                    }
-                });
+                var tmp = $q.defer();
+                tmp.reject();
+                return tmp.promise;
+            }//,
 
-                return $q.all([req.promise, pen.promise]);
-            },
+            // newUser: function (uid, info) {
+            //     var deferred = $q.defer();
 
-            newUser: function (uid, info) {
-                var deferred = $q.defer();
+            //     var ref = users.child(uid);
 
-                var ref = users.child(uid);
+            //     ref.once("value", function (snap) {
+            //         if (!snap.exists()) {
+            //             users.child(uid).set(info, function (error) {
+            //                 if (error) {
+            //                     deferred.reject(error);
+            //                 } else {
+            //                     deferred.resolve(uid);
+            //                 }
+            //             });
+            //         } else {
+            //             deferred.resolve(uid);
+            //         }
+            //     }, function (error) {
+            //         deferred.reject(error);
+            //     });
 
-                ref.once("value", function (snap) {
-                    if (!snap.exists()) {
-                        users.child(uid).set(info, function (error) {
-                            if (error) {
-                                deferred.reject(error);
-                            } else {
-                                deferred.resolve(uid);
-                            }
-                        });
-                    } else {
-                        deferred.resolve(uid);
-                    }
-                }, function (error) {
-                    deferred.reject(error);
-                });
-
-                return deferred.promise;
-            }
+            //     return deferred.promise;
+            // }
         }
     }
 ]);
